@@ -1,0 +1,19 @@
+{
+	"name": "numjs",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "node src/test.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/LEAWIND/Numjs.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/LEAWIND/Numjs/issues"
+	},
+	"homepage": "https://github.com/LEAWIND/Numjs#readme"
+}
