@@ -162,6 +162,16 @@ class Tensor {
 		tensor.shape = this.shape.slice(idArr.length);
 		return tensor;
 	}
+	/**
+	* 计算索引序列对应的扁平化索引
+	* @param {number[]|...number} indexes 索引序列
+	*/
+	flattenIndex(...indexes) {
+		if (indexes.length === 0) throw new Error("Invalid arguments");
+		const idArr = Array.isArray(indexes[0]) ? indexes[0] : indexes;
+		if (idArr.length > this.shape.length) throw new Error("Index array should not longer match shape");
+		return idArr.reduce((a, b, i) => a + b * this.shapeM[i], 0);
+	}
 
 	/**
 	 * 转换成字符串
@@ -400,6 +410,12 @@ function test() {
 		b.fill(6);
 		print(a);
 	}
+	{
+		// flattenIndex
+		let a = Tensor.ones([3, 4, 5]);
+		assert(a.flattenIndex(2, 3, 4) === a.size - 1);
+	}
+
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
