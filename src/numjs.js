@@ -104,6 +104,13 @@ class Tensor {
 		return this.data.constructor;
 	}
 
+	/**
+	 * 张量中的标量总数
+	 */
+	get size() {
+		return this.shape[0] * this.shapeM[0];
+	}
+
 	/** 由类型化数组创建一个一维张量
 	 * @param {TypedArray} arr 
 	 */
@@ -115,14 +122,30 @@ class Tensor {
 			throw new Error("Invalid argument type for Tensor constructor");
 		}
 	}
-
 	/**
-	 * 张量中的标量总数
+	 * 转换成字符串
 	 */
-	get size() {
-		return this.shape[0] * this.shapeM[0];
+	toString(indentStr = '\t') {
+		return `Tensor:${this.atype.name}(${this.shape.join("*")}=${this.size})\n` + this._toStringRecursive(0, 0, indentStr);
 	}
 
+	/** 递归生成字符串
+	 * @param {number} [idx=0] 索引
+	 * @param {number} [dim=0] 维度
+	 * @param {string} [indentStr='\t'] 缩进字符串
+	 */
+	_toStringRecursive(idx = 0, dim = 0, indentStr = '\t') {
+		const dimLen = this.shape[dim];	// 当前维度的尺度 (此维度的元素数量)
+		const eleSize = this.shapeM[dim];	// 此维度的元素的标量数量
+		if (dim === this.shape.length - 1) {
+			return "[" + this.data.slice(idx, idx + dimLen * eleSize).join(", ") + "]";
+		} else {
+			let s = '';
+			for (let i = 0; i < dimLen; i++)
+				s += this._toStringRecursive(idx + i * eleSize, dim + 1, indentStr) + ",\n";
+			return "[\n" + s.replace(/^|(?<=\n)(?=.)/g, indentStr) + "]";
+		}
+	}
 
 	/** 计算js数组的维度
 	 */
