@@ -125,6 +125,7 @@ class Tensor {
 		return Math.hypot(...this.data);
 	}
 
+
 	/** 由类型化数组创建一个一维张量
 	 * @param {TypedArray} arr 
 	 */
@@ -136,6 +137,10 @@ class Tensor {
 			throw new Error("Invalid argument type for Tensor constructor");
 		}
 	}
+
+
+
+
 	/**
 	 * 转换成字符串
 	 */
@@ -220,6 +225,7 @@ class Tensor {
 	/** 全 0 张量
 	 * @param {number[]} shape 
 	 * @param {Float32ArrayConstructor} [atype=Float32Array] 类型
+	 * @return {Tensor}
 	 */
 	static zeros(shape, atype = Float32Array) {
 		return this.full(0, shape, atype);
@@ -227,10 +233,14 @@ class Tensor {
 	/** 全 1 张量
 	 * @param {number[]} shape 
 	 * @param {Float32ArrayConstructor} [atype=Float32Array] 
+	 * @return {Tensor}
 	 */
 	static ones(shape, atype = Float32Array) {
 		return this.full(1, shape, atype);
 	}
+	/**
+	 * @return {Tensor}
+	 */
 	static full(fillValue, shape, atype = Float32Array) {
 		if (!Tensor.isArrayLike(shape)) throw new Error("Argument shape should be array like");
 		const tensor = new Tensor();
@@ -244,6 +254,8 @@ class Tensor {
 	 * @param {number[]} shape 
 	 * @param {Random} rand 随机数生成器，要求实现 next() 方法
 	 * @param {Float32ArrayConstructor} atype 数组类型
+	 * 
+	 * @return {Tensor}
 	 */
 	static rand(shape, rand = new Random(), atype = Float32Array) {
 		if (!Tensor.isArrayLike(shape)) throw new Error("Argument shape should be array like");
@@ -257,6 +269,7 @@ class Tensor {
 	}
 
 	/** 返回一个张量，包含了从标准正态分布(均值为0，方差为 1，即高斯白噪声)中抽取一组随机数
+	 * @return {Tensor}
 	 */
 	static randn(shape, rand = new Random(), atype = Float32Array) {
 		if (!Tensor.isArrayLike(shape)) throw new Error("Argument shape should be array like");
@@ -268,6 +281,7 @@ class Tensor {
 		return tensor;
 	}
 	/** 给定参数n，返回一个从0 到n -1 的随机整数排列。
+	 * @return {Tensor}
 	 */
 	static randperm(n, shape, atype = Float32Array) {
 		if (!Tensor.isArrayLike(shape)) throw new Error("Argument shape should be array like");
@@ -284,6 +298,7 @@ class Tensor {
 	 * @param {number} end 
 	 * @param {number} [steps=100] 
 	 * 
+	 * @return {Tensor}
 	 */
 	static linspace(start, end, steps = 100, atype = Float32Array) {
 		const tensor = new Tensor();
@@ -297,6 +312,7 @@ class Tensor {
 	}
 	/** 返回一个1维张量，长度为 floor((end−start)/step)。
 	 * 包含从start到end，以step为步长的一组序列值(默认步长为1)。
+	 * @return {Tensor}
 	 */
 	static arange(start, end, step = 1, atype = Float32Array) {
 		var steps = Math.floor(end - start) / step + 1;
@@ -307,6 +323,7 @@ class Tensor {
 	 * 
 	 * arr 可以是 js 数组。
 	 * arr 如果是类型化数组，张量将复制一个新的类型化数组。
+	 * @return {Tensor}
 	 */
 	static ofArray(arr, shape = null, atype = Float32Array) {
 		const tensor = new Tensor();
@@ -330,6 +347,7 @@ class Tensor {
 }
 
 function test() {
+	// 初始化
 	print(Tensor.zeros([3, 5]));
 	print(Tensor.ones([5, 3]));
 	print(Tensor.rand([3, 3]));
@@ -346,11 +364,30 @@ function test() {
 		[1, 1, 1],
 	]));
 
+	// 获取基本属性
+	a = Tensor.ofArray([3, 4]);
+	assert(isArrayLike(a.shape, [2]));
+	assert(a.dimensions === 1);
+	assert(a.hypot === 5);
 
-	function print(...arg) {
-		for (let i = 0; i < arg.length; i++)
-			arg[i] += '';
-		console.log(...arg);
+	function isArrayLike(...args) {
+		const m = JSON.stringify(args[0]);
+		for (i = 1; i < args.length; i++)
+			if (m !== JSON.stringify(args[i]))
+				return false;
+		return true;
+	}
+
+	function print(...args) {
+		for (let i = 0; i < args.length; i++)
+			args[i] += '';
+		console.log(...args);
+	}
+
+	function assert(...args) {
+		for (let arg of args)
+			if (!arg)
+				throw new Error('Assertion failed');
 	}
 }
 
