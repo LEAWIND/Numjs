@@ -118,6 +118,12 @@ class Tensor {
 		return this.shape.length;
 	}
 
+	/**
+	 * 所有标量平方和的平方根
+	 */
+	get hypot() {
+		return Math.hypot(...this.data);
+	}
 
 	/** 由类型化数组创建一个一维张量
 	 * @param {TypedArray} arr 
