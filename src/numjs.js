@@ -111,6 +111,14 @@ class Tensor {
 		return this.shape[0] * this.shapeM[0];
 	}
 
+	/**
+	 * 维度的数量
+	 */
+	get dimensions() {
+		return this.shape.length;
+	}
+
+
 	/** 由类型化数组创建一个一维张量
 	 * @param {TypedArray} arr 
 	 */
