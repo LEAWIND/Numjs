@@ -184,6 +184,24 @@ class Tensor {
 		return idArr;
 	}
 
+	/** 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
+	 * @param {number} chunkSize 分块的大小
+	 * @param {number} dim 维度 //TODO
+	 * 
+	 * @return {Tensor[]} 分块数组
+	 */
+	splitView(chunkSize = Infinity, dim = 0) {
+		let chunks = [];
+		let eleSize = this.shapeM[dim];
+		for (let offset = 0; offset < this.shape[0]; offset += chunkSize) {
+			let chunk = new Tensor();
+			chunk.data = this.data.subarray(offset * eleSize, (offset + chunkSize) * eleSize);
+			chunk.shape = [~~(chunk.data.length / eleSize)].concat(this.shape.slice(dim + 1));
+			chunks.push(chunk);
+		}
+		return chunks;
+	}
+
 	/**
 	 * 转换成字符串
 	 */
@@ -426,6 +444,17 @@ function test() {
 		let a = Tensor.ones([3, 4, 5]);
 		assert(a.flattenIndex(2, 3, 4) === a.size - 1);
 		assert(a.flattenIndex(...a.deflattenIndex(23)) === 23);
+	}
+	{
+		// splitView
+		let a = Tensor.randperm(10, [8, 10]);
+		let chunks = a.splitView(3);
+		assert(chunks[0].shape[0] === 3);
+		assert(chunks[1].shape[0] === 3);
+		assert(chunks[2].shape[0] === 2);
+
+		print(a);
+		print(...chunks);
 	}
 
 
