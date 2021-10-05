@@ -174,6 +174,17 @@ class Tensor {
 	}
 
 	/**
+	 * 计算扁平化索引对应的索引序列
+	 * @param {number} [idx=0] 扁平化索引
+	 */
+	deflattenIndex(idx = 0) {
+		if (idx < 0 || idx > this.data.length) throw new Error("Index out of bounds");
+		const idArr = [];
+		this.shapeM.forEach((ds, i) => idx -= ds * (idArr[i] = Math.floor(idx / ds)));
+		return idArr;
+	}
+
+	/**
 	 * 转换成字符串
 	 */
 	toString(indentStr = '\t') {
@@ -411,9 +422,10 @@ function test() {
 		print(a);
 	}
 	{
-		// flattenIndex
+		// flattenIndex, deflattenIndex
 		let a = Tensor.ones([3, 4, 5]);
 		assert(a.flattenIndex(2, 3, 4) === a.size - 1);
+		assert(a.flattenIndex(...a.deflattenIndex(23)) === 23);
 	}
 
 
