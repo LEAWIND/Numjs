@@ -138,8 +138,30 @@ class Tensor {
 		}
 	}
 
+	/**
+	 * 用值填充
+	 * 
+	 * @param {number} value 值
+	 */
+	fill(value) {
+		this.data.fill(value);
+	}
+	/** 
+	 * 根据索引获取视图
+	 * 原张量的变化在视图张量中可见，反之亦然
+	 * @param {number[]|...number} indexes 索引序列
+	 */
+	getView(...indexes) {
+		if (indexes.length === 0) throw new Error("Invalid arguments");
+		let idArr = Array.isArray(indexes[0]) ? indexes[0] : indexes;
+		if (idArr.length > this.shape.length) throw new Error("Index array should not longer than shape");
 
-
+		let idx = idArr.reduce((idx, x, i) => idx + x * this.shapeM[i], 0);
+		let tensor = new Tensor();
+		tensor.data = this.data.subarray(idx, idx + this.shapeM[idArr.length - 1]);
+		tensor.shape = this.shape.slice(idArr.length);
+		return tensor;
+	}
 
 	/**
 	 * 转换成字符串
@@ -364,11 +386,20 @@ function test() {
 		[1, 1, 1],
 	]));
 
-	// 获取基本属性
-	a = Tensor.ofArray([3, 4]);
-	assert(isArrayLike(a.shape, [2]));
-	assert(a.dimensions === 1);
-	assert(a.hypot === 5);
+	{
+		// 获取基本属性
+		let a = Tensor.ofArray([3, 4]);
+		assert(isArrayLike(a.shape, [2]));
+		assert(a.dimensions === 1);
+		assert(a.hypot === 5);
+	}
+	{
+		// getView
+		let a = Tensor.ones([3, 4, 5]);
+		let b = a.getView(1, 3);
+		b.fill(6);
+		print(a);
+	}
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
