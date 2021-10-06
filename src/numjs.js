@@ -587,6 +587,38 @@ class Tensor {
 			? a * Math.expm1(x)
 			: x;
 	}
+
+
+	/** 在给定维度上对输入的张量序列进行连接操作。
+	 */
+	static cat(tensors, dim = 0) {
+		{
+			if (!tensors.length) throw new Error("Invalid argument inputs");
+			// 确保所有张量的不拼接的维度上的大小是一致的
+			const sizes = tensors.map(tensor => tensor.shape.filter((size, i) => i !== dim));
+			const sizesAreEqual = sizes.every(size => JSON.stringify(size) === JSON.stringify(sizes[0]));
+			if (!sizesAreEqual) throw new Error('Cannot concatenate tensors with different shapes');
+		}
+		const outTensor = new Tensor();
+		// 计算输出张量的形状
+		outTensor.shape = tensors[0].shape.slice();
+		outTensor.shape[dim] = tensors.reduce((dshape, tensor) => {
+			dshape += tensor.shape[dim];
+			return dshape;
+		}, 0);
+		// 初始化输出张量
+		outTensor.data = new tensors[0].atype(outTensor.size);
+		// 将所有张量的数据拷贝到输出张量中
+		outTensor.forEach((t, idxArr) => {
+			let offset = outTensor.flattenIndex(idxArr);
+			for (let tensor of tensors) {
+				const view = tensor.getView(idxArr);
+				outTensor.data.subarray(offset, offset + view.size).set(view.data);
+				offset += view.size;
+			}
+		}, dim - 1, []);
+		return outTensor;
+	}
 }
 
 function test() {
