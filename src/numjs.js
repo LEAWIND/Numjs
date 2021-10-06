@@ -394,6 +394,17 @@ class Tensor {
 		return 1 / (1 + Math.exp(-x));
 	}
 
+	/**
+	 * 二元操作 //TODO
+	 */
+	static _binaryOperateForEach(tensorA, tensorB, operator, out) {
+		if (!out) out = tensorA.cloneShape();
+		if (tensorA.size !== tensorB.size) throw new Error("Shapes not match");
+		for (let i = 0; i < tensorA.data.length; i++)
+			out.data[i] = operator(tensorA.data[i], tensorB.data[i]);
+		return out;
+	}
+
 	/** 全 0 张量
 	 * @param {number[]} shape 
 	 * @param {Float32ArrayConstructor} [atype=Float32Array] 类型
@@ -608,7 +619,13 @@ function test() {
 		Tensor.neg(a, a);
 		print(a);
 	}
-
+	{
+		// _binaryOperateForEach
+		let a = Tensor.ones([2, 3]);
+		let b = Tensor.ones([2, 3]);
+		let c = Tensor._binaryOperateForEach(a, b, (x, y) => x + y);
+		print(c);
+	}
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
 		for (i = 1; i < args.length; i++)
