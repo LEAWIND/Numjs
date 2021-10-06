@@ -355,7 +355,6 @@ class Tensor {
 		return Array.isArray(arr) || Tensor.isTypedArrayInstance(arr);
 	}
 
-
 	/** 生成正态分布随机数
 	 */
 	static _generateNormalDistribution(mean = 0, stdDev = 1, rand = new Random()) {
@@ -365,6 +364,16 @@ class Tensor {
 		return z * stdDev + mean; // 将z转换为具有给定均值和标准差的正态分布随机数
 	}
 
+	/** 对张量中的每个标量执行一元操作
+	 * @param {Tensor} tensor 
+	 * @param {(x:number)=>number} operator 一元操作
+	 * @param {Tensor} [out] 存放结果的张量
+	 */
+	static _unaryOperateForEach(tensor, operator, out = tensor.cloneShape()) {
+		for (let i = 0; i < tensor.data.length; i++)
+			out.data[i] = operator(tensor.data[i]);
+		return out;
+	}
 
 	/** 全 0 张量
 	 * @param {number[]} shape 
@@ -570,7 +579,12 @@ function test() {
 		assert(a.data[0] === 1);
 		assert(c.data[0] === 0);
 	}
-
+	{
+		// _unaryOperateForEach
+		let a = Tensor.linspace(1, 60, 60).reshape([3, 4, 5]);
+		Tensor._unaryOperateForEach(a, x => x ** 2, a);
+		print(a);
+	}
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
