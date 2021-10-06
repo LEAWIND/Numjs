@@ -405,6 +405,36 @@ class Tensor {
 		return out;
 	}
 
+	// 对应元素相加
+	static add(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => a + b, out);
+	}
+
+	// 对应元素相减
+	static sub(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => a - b, out);
+	}
+
+	// 对应元素相除
+	static div(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => a / b, out);
+	}
+
+	// 对应元素相乘
+	static mul(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => a * b, out);
+	}
+
+	// 按元素求次幂值
+	static pow(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => a ** b, out);
+	}
+
+	// 返回从原点 (0,0) 到 (x,y) 点的线段与 x 轴正方向之间的平面角度 (弧度值)，也就是 Math.atan2(y,x)
+	static atan2(tensorA, tensorB, out) {
+		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => Math.atanh(a, b), out);
+	}
+
 	/** 全 0 张量
 	 * @param {number[]} shape 
 	 * @param {Float32ArrayConstructor} [atype=Float32Array] 类型
