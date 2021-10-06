@@ -184,6 +184,36 @@ class Tensor {
 		return idArr;
 	}
 
+	/** 从坐标idArr开始，递归遍历到更深的维度maxDim为止
+	 * @param {(value: number, idxArr: number[]) => void} [callback=(t, idxArr) => {}] 
+	 * @param {number} [maxDim=this.dimensions - 1] 最深维度
+	 * @param {any[]} [idArr=[]] 起始位置的索引序列
+	 */
+	forEach(callback = (value, idxArr) => {}, maxDim = this.dimensions - 1, idArr = []) {
+		if (maxDim >= this.dimensions) throw new Error("maxDim should less than this.dimensions");
+		if (idArr.length === maxDim) {
+			const offset = this.flattenIndex(idArr);
+			if (maxDim === this.dimensions - 1) {
+				for (let i = 0; i < this.shape[maxDim]; i++)
+					callback(this.data[offset + i], idArr.concat(i));
+			} else {
+				const eleSize = this.shapeM[maxDim];
+				for (let i = 0; i < this.shape[maxDim]; i++) {
+					let eleOffset = offset + i * eleSize;
+					let viewerTensor = new Tensor();
+					viewerTensor.data = this.data.subarray(eleOffset, eleOffset + eleSize);
+					viewerTensor.shape = this.shape.slice(maxDim + 1);
+					callback(viewerTensor, idArr.concat(i));
+				}
+			}
+		} else {
+			for (let i = 0; i < this.shape[idArr.length]; i++)
+				this.forEach(callback, maxDim, idArr.concat(i));
+		}
+		return this;
+	}
+
+
 	/** 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
 	 * @param {number} chunkSize 分块的大小
 	 * @param {number} dim 维度 //TODO
@@ -201,6 +231,7 @@ class Tensor {
 		}
 		return chunks;
 	}
+
 
 	/**
 	 * 转换成字符串
@@ -455,6 +486,15 @@ function test() {
 
 		print(a);
 		print(...chunks);
+	}
+
+	{
+		// forEach
+		let a = Tensor.ofArray([
+			[3, 4, 5, 6, 7],
+			[9, 8, 7, 6, 5],
+		]);
+		a.forEach((x, i) => print(`[${i}] ${x}`));
 	}
 
 
