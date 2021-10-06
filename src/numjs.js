@@ -388,10 +388,7 @@ class Tensor {
 	}
 	// 每个元素的sigmoid值
 	static sigmoid(tensor, out = tensor.cloneShape()) {
-		return Tensor._unaryOperateForEach(tensor, x => Tensor._sigmoid(x), out);
-	}
-	static _sigmoid(x) {
-		return 1 / (1 + Math.exp(-x));
+		return Tensor._unaryOperateForEach(tensor, x => Tensor._Sigmoid(x), out);
 	}
 
 	/**
@@ -556,6 +553,22 @@ class Tensor {
 		}
 		tensor.shape = shape;
 		return tensor;
+	}
+
+
+	static _Sigmoid(x) {
+		return 1 / (1 + Math.exp(-x));
+	}
+	static _ReLU(x) {
+		return Math.max(0, x);
+	}
+	static _LeakyReLU(x, k = 0.1) {
+		return Math.max(x, k * x);
+	}
+	static _ELU(x, a) {
+		return x < 0
+			? a * Math.expm1(x)
+			: x;
 	}
 }
 
