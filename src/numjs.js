@@ -274,6 +274,18 @@ class Tensor {
 	}
 
 	/**
+	 * 复制出一个相同形状的空张
+	 * @param {type} [atype=this.atype] 数组类型
+	 * @returns {Tensor}
+	 */
+	cloneShape(atype = this.atype) {
+		const tensor = new Tensor();
+		tensor.data = new atype(this.size);
+		tensor.shape = this.shape.slice();
+		return tensor;
+	}
+
+	/**
 	 * 转换成字符串
 	 */
 	toString(indentStr = '\t') {
@@ -550,11 +562,13 @@ function test() {
 		print(a.shape);
 	}
 	{
-		// clone
+		// clone, cloneShape
 		let a = Tensor.ones([2]);
 		let b = a.clone();
+		let c = a.cloneShape();
 		b.data[0] = 9;
 		assert(a.data[0] === 1);
+		assert(c.data[0] === 0);
 	}
 
 
