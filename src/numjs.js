@@ -374,6 +374,25 @@ class Tensor {
 			out.data[i] = operator(tensor.data[i]);
 		return out;
 	}
+	// 将输入张量每个元素的夹紧到区间 [min, max]
+	static clamp(tensor, min, max, out = tensor.cloneShape()) {
+		return Tensor._unaryOperateForEach(tensor, x => Math.min(Math.max(x, min), max), out);
+	}
+	// 按元素取负。 x = − x
+	static neg(tensor, out = tensor.cloneShape()) {
+		return Tensor._unaryOperateForEach(tensor, x => -x, out);
+	}
+	// 按元素求倒数。 x = x ? 1 / x : Infinity
+	static reciprocal(tensor, out = tensor.cloneShape()) {
+		return Tensor._unaryOperateForEach(tensor, x => x ? 1 / x : Infinity, out);
+	}
+	// 每个元素的sigmoid值
+	static sigmoid(tensor, out = tensor.cloneShape()) {
+		return Tensor._unaryOperateForEach(tensor, x => Tensor._sigmoid(x), out);
+	}
+	static _sigmoid(x) {
+		return 1 / (1 + Math.exp(-x));
+	}
 
 	/** 全 0 张量
 	 * @param {number[]} shape 
@@ -583,6 +602,10 @@ function test() {
 		// _unaryOperateForEach
 		let a = Tensor.linspace(1, 60, 60).reshape([3, 4, 5]);
 		Tensor._unaryOperateForEach(a, x => x ** 2, a);
+		print(a);
+		a = a.getView(0).clone();
+		Tensor.clamp(a, 0, 100, a);
+		Tensor.neg(a, a);
 		print(a);
 	}
 
