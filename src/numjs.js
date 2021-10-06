@@ -254,6 +254,16 @@ class Tensor {
 	}
 
 
+	/** 修改本张量的形状
+	 * @param {number[]} newShape 新的形状
+	 */
+	reshape(newShape) {
+		if (Tensor.sizeOfShape(newShape) !== this.size)
+			throw new Error("New shape size not match");
+		this.shape = newShape;
+		return this;
+	}
+
 	/**
 	 * 转换成字符串
 	 */
@@ -523,6 +533,14 @@ function test() {
 		a.forEachScalar(x => n += x);
 		print(n / a.size);
 	}
+	{
+		// reshape
+		let a = Tensor.randn([32, 32, 32]);
+		print(a.shape);
+		a.reshape([4, 128, 64]);
+		print(a.shape);
+	}
+	
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
