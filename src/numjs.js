@@ -228,6 +228,13 @@ class Tensor {
 		return this;
 	}
 
+	/** 对每一个标量进行映射
+	 */
+	mapScalar(mapper = x => x) {
+		this.data = this.data.map(mapper);
+		return this;
+	}
+
 	/** 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
 	 * @param {number} chunkSize 分块的大小
 	 * @param {number} dim 维度 //TODO
@@ -497,13 +504,10 @@ function test() {
 		assert(chunks[0].shape[0] === 3);
 		assert(chunks[1].shape[0] === 3);
 		assert(chunks[2].shape[0] === 2);
-
-		print(a);
-		print(...chunks);
 	}
 
 	{
-		// forEach
+		// forEach, forEachScalar
 		let a = Tensor.ofArray([
 			[3, 4, 5, 6, 7],
 			[9, 8, 7, 6, 5],
@@ -511,7 +515,14 @@ function test() {
 		a.forEach((x, i) => print(`[${i}] ${x}`));
 		a.forEachScalar((x, i) => print(`[${i}] ${x}`));
 	}
-
+	{
+		// map
+		let a = Tensor.randn([32, 32, 32]);
+		a.mapScalar(x => x > 0 ? 1 : 0);
+		let n = 0;
+		a.forEachScalar(x => n += x);
+		print(n / a.size);
+	}
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
