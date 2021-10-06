@@ -213,6 +213,20 @@ class Tensor {
 		return this;
 	}
 
+	/** 遍历所有标量
+	 * @param {(t: number, idxFlat: number, arr: TypedArray) => void} [callback=(t, idxFlat, arr) => {}] 
+	 * callback 参数：
+	 * 
+	 *     t        标量值
+	 * 
+	 *     idxFlat  在原始数组中的索引
+	 * 
+	 *     arr      原始数组
+	 */
+	forEachScalar(callback = (value, idxFlat, arr) => {}) {
+		this.data.forEach((value, idxFlat) => callback(value, idxFlat, this.data));
+		return this;
+	}
 
 	/** 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
 	 * @param {number} chunkSize 分块的大小
@@ -495,6 +509,7 @@ function test() {
 			[9, 8, 7, 6, 5],
 		]);
 		a.forEach((x, i) => print(`[${i}] ${x}`));
+		a.forEachScalar((x, i) => print(`[${i}] ${x}`));
 	}
 
 
