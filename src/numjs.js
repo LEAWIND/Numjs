@@ -555,6 +555,23 @@ class Tensor {
 		return tensor;
 	}
 
+	/** 判断是否是 TypedArray 的子类
+	 * @param {any} ta 
+	 */
+	static isTypedArray(ta) {
+		const TypedArrayConstructors = [
+			Int8Array,
+			Uint8Array,
+			Uint8ClampedArray,
+			Int16Array,
+			Uint16Array,
+			Int32Array,
+			Uint32Array,
+			Float32Array,
+			Float64Array,
+		];
+		return TypedArrayConstructors.indexOf(ta) !== -1;
+	}
 
 	static _Sigmoid(x) {
 		return 1 / (1 + Math.exp(-x));
