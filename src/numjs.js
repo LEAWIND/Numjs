@@ -263,6 +263,15 @@ class Tensor {
 		this.shape = newShape;
 		return this;
 	}
+	/** 复制出一个新的张量，不共享内存。
+	 * @param {TypedArray} [atype=this.atype] 
+	 */
+	clone(atype = this.atype) {
+		const tensor = new Tensor();
+		tensor.data = new atype(this.data);
+		tensor.shape = this.shape.slice();
+		return tensor;
+	}
 
 	/**
 	 * 转换成字符串
@@ -540,7 +549,14 @@ function test() {
 		a.reshape([4, 128, 64]);
 		print(a.shape);
 	}
-	
+	{
+		// clone
+		let a = Tensor.ones([2]);
+		let b = a.clone();
+		b.data[0] = 9;
+		assert(a.data[0] === 1);
+	}
+
 
 	function isArrayLike(...args) {
 		const m = JSON.stringify(args[0]);
