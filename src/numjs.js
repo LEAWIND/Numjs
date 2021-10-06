@@ -621,6 +621,21 @@ class Tensor {
 	}
 }
 
+// 注入 Math 的一元方法
+const MathUnaryOperators = `
+	cos  acos cosh acosh
+	sin  asin sinh asinh
+	tan  atan tanh atanh
+	abs  sign
+	sqrt cbrt clz32
+	ceil floor trunc round fround
+	exp expm1 log log1p log10 log2
+`.replace(/(\/\/.*)|(^\s+)|(\s+$)/g, '').split(/[^a-zA-Z0-9]+/g);
+for (let mathMethod of MathUnaryOperators) {
+	Tensor[mathMethod] = (tensor, out = tensor.cloneShape()) =>
+		Tensor._unaryOperateForEach(tensor, x => Math[mathMethod](x), out);
+}
+
 function test() {
 	// 初始化
 	print(Tensor.zeros([3, 5]));
