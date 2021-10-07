@@ -3,9 +3,9 @@ class Random {
 	mean;
 	stdDev;
 	/**
-	 * @param {number} [seed=Date.now()] 种子
-	 * @param {number} [mean=0] 用于正态分布的默认均值
-	 * @param {number} [stdDev=1] 用于正态分布的默认标准差
+	 * @param {number} seed 种子
+	 * @param {number} mean 用于正态分布的默认均值
+	 * @param {number} stdDev 用于正态分布的默认标准差
 	 */
 	constructor(seed = Date.now(), mean = 0, stdDev = 1) {
 		if (typeof seed !== "number") throw new TypeError(`Expected number, got ${typeof seed}`);
@@ -78,7 +78,8 @@ class Tensor {
 		this.#shapeM = null;
 	}
 
-	/** 各维度的总大小
+	/**
+	 * 各维度的总大小
 	 * 
 	 * 例如:
 	 * shape  = [  2,   1,   6,  9,  3]
@@ -98,7 +99,8 @@ class Tensor {
 		throw new Error("Tensor#shapeM is read only");
 	}
 
-	/** 类型化数组的类型
+	/**
+	 * 类型化数组的类型
 	 */
 	get atype() {
 		return this.data.constructor;
@@ -126,7 +128,8 @@ class Tensor {
 	}
 
 
-	/** 由类型化数组创建一个一维张量
+	/**
+	 * 由类型化数组创建一个一维张量
 	 * @param {TypedArray} arr 
 	 */
 	constructor(arr) {
@@ -146,7 +149,8 @@ class Tensor {
 	fill(value) {
 		this.data.fill(value);
 	}
-	/** 
+	/**
+	 * 
 	 * 根据索引获取视图
 	 * 原张量的变化在视图张量中可见，反之亦然
 	 * @param {number[]|...number} indexes 索引序列
@@ -175,7 +179,7 @@ class Tensor {
 
 	/**
 	 * 计算扁平化索引对应的索引序列
-	 * @param {number} [idx=0] 扁平化索引
+	 * @param {number} idx 扁平化索引
 	 */
 	deflattenIndex(idx = 0) {
 		if (idx < 0 || idx > this.data.length) throw new Error("Index out of bounds");
@@ -184,9 +188,10 @@ class Tensor {
 		return idArr;
 	}
 
-	/** 从坐标idArr开始，递归遍历到更深的维度maxDim为止
+	/**
+	 * 从坐标idArr开始，递归遍历到更深的维度maxDim为止
 	 * @param {(value: number, idxArr: number[]) => void} [callback=(t, idxArr) => {}] 
-	 * @param {number} [maxDim=this.dimensions - 1] 最深维度
+	 * @param {number} maxDim 最深维度
 	 * @param {any[]} [idArr=[]] 起始位置的索引序列
 	 */
 	forEach(callback = (value, idxArr) => {}, maxDim = this.dimensions - 1, idArr = []) {
@@ -213,7 +218,8 @@ class Tensor {
 		return this;
 	}
 
-	/** 遍历所有标量
+	/**
+	 * 遍历所有标量
 	 * @param {(t: number, idxFlat: number, arr: TypedArray) => void} [callback=(t, idxFlat, arr) => {}] 
 	 * callback 参数：
 	 * 
@@ -228,14 +234,16 @@ class Tensor {
 		return this;
 	}
 
-	/** 对每一个标量进行映射
+	/**
+	 * 对每一个标量进行映射
 	 */
 	mapScalar(mapper = x => x) {
 		this.data = this.data.map(mapper);
 		return this;
 	}
 
-	/** 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
+	/**
+	 * 将输入张量分割成相等形状的 chunks（如果可分）。 如果沿指定维的张量形状大小不能被 chunkSize 整除， 则最后一个分块会小于其它分块。
 	 * @param {number} chunkSize 分块的大小
 	 * @param {number} dim 维度 //TODO
 	 * 
@@ -254,7 +262,8 @@ class Tensor {
 	}
 
 
-	/** 修改本张量的形状
+	/**
+	 * 修改本张量的形状
 	 * @param {number[]} newShape 新的形状
 	 */
 	reshape(newShape) {
@@ -263,8 +272,9 @@ class Tensor {
 		this.shape = newShape;
 		return this;
 	}
-	/** 复制出一个新的张量，不共享内存。
-	 * @param {TypedArray} [atype=this.atype] 
+	/**
+	 * 复制出一个新的张量，不共享内存。
+	 * @param {TypedArray} atype 
 	 */
 	clone(atype = this.atype) {
 		const tensor = new Tensor();
@@ -275,7 +285,7 @@ class Tensor {
 
 	/**
 	 * 复制出一个相同形状的空张
-	 * @param {type} [atype=this.atype] 数组类型
+	 * @param {type} atype 数组类型
 	 * @returns {Tensor}
 	 */
 	cloneShape(atype = this.atype) {
@@ -292,10 +302,11 @@ class Tensor {
 		return `Tensor:${this.atype.name}(${this.shape.join("*")}=${this.size})\n` + this._toStringRecursive(0, 0, indentStr);
 	}
 
-	/** 递归生成字符串
-	 * @param {number} [idx=0] 索引
-	 * @param {number} [dim=0] 维度
-	 * @param {string} [indentStr='\t'] 缩进字符串
+	/**
+	 * 递归生成字符串
+	 * @param {number} idx 索引
+	 * @param {number} dim 维度
+	 * @param {string} indentStr 缩进字符串
 	 */
 	_toStringRecursive(idx = 0, dim = 0, indentStr = '\t') {
 		const dimLen = this.shape[dim];	// 当前维度的尺度 (此维度的元素数量)
@@ -310,7 +321,8 @@ class Tensor {
 		}
 	}
 
-	/** 计算js数组的维度
+	/**
+	 * 计算js数组的维度
 	 */
 	static shapeOfArray(arr) {
 		if (!Array.isArray(arr))
@@ -324,7 +336,8 @@ class Tensor {
 		return shape;
 	}
 
-	/** 计算shape对应的标量数量，即各维长度相乘
+	/**
+	 * 计算shape对应的标量数量，即各维长度相乘
 	 * @param {number[]} shape 
 	 */
 	static sizeOfShape(shape) {
@@ -332,7 +345,8 @@ class Tensor {
 	}
 
 
-	/** 判断是否是 TypedArray 的实例
+	/**
+	 * 判断是否是 TypedArray 的实例
 	 */
 	static isTypedArrayInstance(arr) {
 		const TypedArrayConstructors = [
@@ -349,13 +363,15 @@ class Tensor {
 		return TypedArrayConstructors.some(T => arr instanceof T);
 	}
 
-	/** 是否为数组或类型化数组
+	/**
+	 * 是否为数组或类型化数组
 	 */
 	static isArrayLike(arr) {
 		return Array.isArray(arr) || Tensor.isTypedArrayInstance(arr);
 	}
 
-	/** 生成正态分布随机数
+	/**
+	 * 生成正态分布随机数
 	 */
 	static _generateNormalDistribution(mean = 0, stdDev = 1, rand = new Random()) {
 		var u = 1 - rand.next(); // 生成一个0到1之间的随机数，用于保证u不为0
@@ -364,7 +380,8 @@ class Tensor {
 		return z * stdDev + mean; // 将z转换为具有给定均值和标准差的正态分布随机数
 	}
 
-	/** 对张量中的每个标量执行一元操作
+	/**
+	 * 对张量中的每个标量执行一元操作
 	 * @param {Tensor} tensor 
 	 * @param {(x:number)=>number} operator 一元操作
 	 * @param {Tensor} [out] 存放结果的张量
@@ -432,17 +449,19 @@ class Tensor {
 		return Tensor._binaryOperateForEach(tensorA, tensorB, (a, b) => Math.atanh(a, b), out);
 	}
 
-	/** 全 0 张量
+	/**
+	 * 全 0 张量
 	 * @param {number[]} shape 
-	 * @param {Float32ArrayConstructor} [atype=Float32Array] 类型
+	 * @param {Float32ArrayConstructor} atype 类型
 	 * @return {Tensor}
 	 */
 	static zeros(shape, atype = Float32Array) {
 		return this.full(0, shape, atype);
 	}
-	/** 全 1 张量
+	/**
+	 * 全 1 张量
 	 * @param {number[]} shape 
-	 * @param {Float32ArrayConstructor} [atype=Float32Array] 
+	 * @param {Float32ArrayConstructor} atype 
 	 * @return {Tensor}
 	 */
 	static ones(shape, atype = Float32Array) {
@@ -460,7 +479,8 @@ class Tensor {
 		return tensor;
 	}
 
-	/** 返回一个张量，包含了从区间[0,1)的均匀分布中抽取的一组随机数
+	/**
+	 * 返回一个张量，包含了从区间[0,1)的均匀分布中抽取的一组随机数
 	 * @param {number[]} shape 
 	 * @param {Random} rand 随机数生成器，要求实现 next() 方法
 	 * @param {Float32ArrayConstructor} atype 数组类型
@@ -478,7 +498,8 @@ class Tensor {
 		return tensor;
 	}
 
-	/** 返回一个张量，包含了从标准正态分布(均值为0，方差为 1，即高斯白噪声)中抽取一组随机数
+	/**
+	 * 返回一个张量，包含了从标准正态分布(均值为0，方差为 1，即高斯白噪声)中抽取一组随机数
 	 * @return {Tensor}
 	 */
 	static randn(shape, rand = new Random(), atype = Float32Array) {
@@ -490,7 +511,8 @@ class Tensor {
 		tensor.shape = shape;
 		return tensor;
 	}
-	/** 给定参数n，返回一个从0 到n -1 的随机整数排列。
+	/**
+	 * 给定参数n，返回一个从0 到n -1 的随机整数排列。
 	 * @return {Tensor}
 	 */
 	static randperm(n, shape, atype = Float32Array) {
@@ -503,7 +525,8 @@ class Tensor {
 		return tensor;
 	}
 
-	/** 返回一个1维张量，包含在区间 [start, end] 上均匀间隔的 steps 个点，其中包括两端。输出1维张量的长度为steps。
+	/**
+	 * 返回一个1维张量，包含在区间 [start, end] 上均匀间隔的 steps 个点，其中包括两端。输出1维张量的长度为steps。
 	 * @param {number} start 
 	 * @param {number} end 
 	 * @param {number} [steps=100] 
@@ -520,7 +543,8 @@ class Tensor {
 			tensor.data[i] = d;
 		return tensor;
 	}
-	/** 返回一个1维张量，长度为 floor((end−start)/step)。
+	/**
+	 * 返回一个1维张量，长度为 floor((end−start)/step)。
 	 * 包含从start到end，以step为步长的一组序列值(默认步长为1)。
 	 * @return {Tensor}
 	 */
@@ -529,7 +553,8 @@ class Tensor {
 		return Tensor.linspace(start, end, steps, atype);
 	}
 
-	/** 由数组创建张量
+	/**
+	 * 由数组创建张量
 	 * 
 	 * arr 可以是 js 数组。
 	 * arr 如果是类型化数组，张量将复制一个新的类型化数组。
@@ -555,7 +580,8 @@ class Tensor {
 		return tensor;
 	}
 
-	/** 判断是否是 TypedArray 的子类
+	/**
+	 * 判断是否是 TypedArray 的子类
 	 * @param {any} ta 
 	 */
 	static isTypedArray(ta) {
@@ -589,7 +615,8 @@ class Tensor {
 	}
 
 
-	/** 在给定维度上对输入的张量序列进行连接操作。
+	/**
+	 * 在给定维度上对输入的张量序列进行连接操作。
 	 */
 	static cat(tensors, dim = 0) {
 		{
